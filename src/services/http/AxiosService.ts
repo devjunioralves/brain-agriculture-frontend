@@ -39,7 +39,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-class Request {
+export class AxiosService {
   public static HTTP_STATUS = HTTP_STATUS;
 
   public static CancelToken = axios.CancelToken;
@@ -57,7 +57,7 @@ class Request {
   ): Promise<R> {
     path += `?${this.queryString(data)}`;
 
-    return Request.request({ method: HTTP_METHOD.GET, path, config });
+    return AxiosService.request({ method: HTTP_METHOD.GET, path, config });
   }
 
   public static post<T = any, R = AxiosResponse<T>>(
@@ -65,7 +65,7 @@ class Request {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return Request.request({
+    return AxiosService.request({
       method: HTTP_METHOD.POST,
       path,
       data,
@@ -78,7 +78,12 @@ class Request {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return Request.request({ method: HTTP_METHOD.PUT, path, data, config });
+    return AxiosService.request({
+      method: HTTP_METHOD.PUT,
+      path,
+      data,
+      config,
+    });
   }
 
   public static patch<T = any, R = AxiosResponse<T>>(
@@ -86,7 +91,7 @@ class Request {
     data?: any,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return Request.request<R>({
+    return AxiosService.request<R>({
       method: HTTP_METHOD.PATCH,
       path,
       data,
@@ -98,7 +103,7 @@ class Request {
     path: string,
     config?: AxiosRequestConfig
   ): Promise<R> {
-    return Request.request({ method: HTTP_METHOD.DEL, path, config });
+    return AxiosService.request({ method: HTTP_METHOD.DEL, path, config });
   }
 
   private static async request<R>({
@@ -108,7 +113,7 @@ class Request {
     config = {},
   }: RequestParams): Promise<R> {
     try {
-      const response = await Request.httpRequest<R>({
+      const response = await AxiosService.httpRequest<R>({
         method,
         path,
         data,
@@ -137,7 +142,7 @@ class Request {
   }: RequestParams): Promise<R> {
     // @ts-ignore
     const axiosMethod: Function = api[method];
-    const reqConfig = Request.getConfig(config || {});
+    const reqConfig = AxiosService.getConfig(config || {});
 
     if ([HTTP_METHOD.GET, HTTP_METHOD.DEL].includes(method)) {
       return await axiosMethod(path, reqConfig);
@@ -183,5 +188,3 @@ class Request {
       .join("&");
   }
 }
-
-export default Request;
