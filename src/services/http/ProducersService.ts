@@ -1,25 +1,26 @@
-import { AxiosService } from "./AxiosService";
+import { IProducer } from "../../pages/Producers/interface/IProducer";
+import apiService from "./AxiosService";
 
 export class ProducersService {
-  public static uri = "producers";
+  public static uri = "producer";
 
-  public static getAllProducers(params: any) {
-    return AxiosService.get(`${this.uri}/`, params);
+  public static getAllProducers(params: any): IProducer[] {
+    return apiService.get(`${this.uri}/`, params) as unknown as IProducer[];
   }
 
   public static getProducer(id: any) {
-    return AxiosService.get(`${this.uri}/${id}`);
+    return apiService.get(`${this.uri}/${id}`);
   }
 
   public static store(data: any) {
-    return AxiosService.post(`${this.uri}`, data);
+    return apiService.post(`${this.uri}`, data);
   }
 
   public static update(id: number, data: any) {
-    return AxiosService.patch(`${this.uri}/${id}`, data);
+    return apiService.patch(`${this.uri}/${id}`, data);
   }
 
   public static remove(id: number) {
-    return AxiosService.del(`${this.uri}/${id}`);
+    return apiService.del(`${this.uri}/${id}`);
   }
 }

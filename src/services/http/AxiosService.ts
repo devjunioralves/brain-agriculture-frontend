@@ -1,190 +1,82 @@
-import axios, { AxiosResponse, AxiosRequestConfig, AxiosInstance } from "axios";
-import { API_URL } from "../../config/api";
-interface RequestParams {
-  method: string;
-  path: string;
-  data?: any;
-  config?: AxiosRequestConfig;
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+
+interface RequestConfig {
+  headers?: any;
+  params?: any;
 }
 
-const HTTP_METHOD = {
-  GET: "get",
-  POST: "post",
-  PUT: "put",
-  PATCH: "patch",
-  DEL: "delete",
-};
+interface ApiResponse<T> {
+  data: T;
+}
 
-export const HTTP_STATUS = {
-  UNAUTHORIZED: 401,
-  UNPROCESSABLE_ENTITY: 422,
-  FORBIDDEN: 403,
-};
+class AxiosService {
+  private readonly instance: AxiosInstance;
 
-const api: AxiosInstance = axios.create({
-  baseURL: API_URL,
-  timeout: 15000,
-  withCredentials: true,
-  timeoutErrorMessage: "Ocorreu um problema de conexão com o servidor.",
-});
-
-api.interceptors.response.use(
-  function (response: any) {
-    return response;
-  },
-  function (error: { response: { data: { statusCode: number } } }) {
-    if (error.response.data.statusCode === HTTP_STATUS.UNAUTHORIZED) {
-      console.log("nao autenticado");
-    }
-    return Promise.reject(error);
-  }
-);
-export class AxiosService {
-  public static HTTP_STATUS = HTTP_STATUS;
-
-  public static CancelToken = axios.CancelToken;
-
-  public static isCancel = axios.isCancel;
-
-  public static setHeader(name: string, value: string): void {
-    api.defaults.headers[name] = value;
-  }
-
-  public static get<T = any, R = AxiosResponse<T>>(
-    path: string,
-    data = {},
-    config?: AxiosRequestConfig
-  ): Promise<R> {
-    path += `?${this.queryString(data)}`;
-
-    return AxiosService.request({ method: HTTP_METHOD.GET, path, config });
-  }
-
-  public static post<T = any, R = AxiosResponse<T>>(
-    path: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<R> {
-    return AxiosService.request({
-      method: HTTP_METHOD.POST,
-      path,
-      data,
-      config,
+  constructor() {
+    const instance = axios.create({
+      baseURL: "http://localhost:8080/api",
+      timeout: 10000,
     });
+
+    this.instance = instance;
   }
 
-  public static put<T = any, R = AxiosResponse<T>>(
-    path: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<R> {
-    return AxiosService.request({
-      method: HTTP_METHOD.PUT,
-      path,
-      data,
-      config,
-    });
-  }
-
-  public static patch<T = any, R = AxiosResponse<T>>(
-    path: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<R> {
-    return AxiosService.request<R>({
-      method: HTTP_METHOD.PATCH,
-      path,
-      data,
-      config,
-    });
-  }
-
-  public static async del<T = any, R = AxiosResponse<T>>(
-    path: string,
-    config?: AxiosRequestConfig
-  ): Promise<R> {
-    return AxiosService.request({ method: HTTP_METHOD.DEL, path, config });
-  }
-
-  private static async request<R>({
-    method,
-    path,
-    data = {},
-    config = {},
-  }: RequestParams): Promise<R> {
+  async get<T>(endpoint: string, config?: RequestConfig) {
     try {
-      const response = await AxiosService.httpRequest<R>({
-        method,
-        path,
+      const response: AxiosResponse<ApiResponse<T>> = await this.instance.get(
+        endpoint,
+        config
+      );
+      return response.data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
+  }
+
+  async post<T>(
+    endpoint: string,
+    data: any,
+    config?: RequestConfig
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<ApiResponse<T>> = await this.instance.post(
+        endpoint,
         data,
-        config,
-      });
-
-      return response;
-    } catch (error: any) {
-      const requestIsCanceled = !error.response;
-
-      if (requestIsCanceled) {
-        return Promise.reject(error);
-      }
-
-      const { data: errorData } = error.response;
-
-      return Promise.reject(errorData);
+        config
+      );
+      return response.data.data;
+    } catch (error) {
+      throw new Error(error as string);
     }
   }
 
-  private static async httpRequest<R>({
-    method = "get",
-    path,
-    data,
-    config,
-  }: RequestParams): Promise<R> {
-    // @ts-ignore
-    const axiosMethod: Function = api[method];
-    const reqConfig = AxiosService.getConfig(config || {});
-
-    if ([HTTP_METHOD.GET, HTTP_METHOD.DEL].includes(method)) {
-      return await axiosMethod(path, reqConfig);
+  async patch<T>(
+    endpoint: string,
+    data: any,
+    config?: RequestConfig
+  ): Promise<T> {
+    try {
+      const response: AxiosResponse<ApiResponse<T>> = await this.instance.patch(
+        endpoint,
+        data,
+        config
+      );
+      return response.data.data;
+    } catch (error) {
+      throw new Error(error as string);
     }
-
-    return await axiosMethod(path, data, reqConfig);
   }
 
-  private static getConfig(config: object): object {
-    return {
-      responseType: "json",
-      headers: {
-        Authorization: `Bearer ${api.defaults.headers.Authorization}`,
-        "Content-Type": "application/json",
-      },
-      ...config,
-    };
-  }
-
-  private static queryString(obj: any = {}) {
-    return Object.keys(obj)
-      .map(function (key) {
-        if (obj && obj[key] && typeof obj[key] == "object" && obj[key].length) {
-          let url: any = [];
-
-          for (let index = 0; index < obj[key].length; index++) {
-            const objeto = obj[key][index];
-
-            Object.keys(objeto).forEach(function (keyObjeto) {
-              let valorObjeto = objeto[keyObjeto];
-
-              url.push(`${key}[${index}][${keyObjeto}]=${valorObjeto}`);
-            });
-          }
-
-          return url.join("&");
-        } else {
-          let url = `${key}=${obj[key]}`;
-
-          return url;
-        }
-      })
-      .join("&");
+  async del<T>(endpoint: string, config?: RequestConfig): Promise<T> {
+    try {
+      const response: AxiosResponse<ApiResponse<T>> =
+        await this.instance.delete(endpoint, config);
+      return response.data.data;
+    } catch (error) {
+      throw new Error(error as string);
+    }
   }
 }
+
+const apiService = new AxiosService();
+export default apiService;

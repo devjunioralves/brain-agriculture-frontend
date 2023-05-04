@@ -1,25 +1,46 @@
-import { AxiosService } from "./AxiosService";
+import apiService from "./AxiosService";
 
 export default class OverviewDashboardHttpService {
-  public static uri = "overview";
+  public static uri = "reports";
 
   public static getTotalFarms() {
-    return AxiosService.get(`${this.uri}/total-farms`);
+    return apiService.get(`${this.uri}/total-farms`);
   }
 
-  public static getTotalHectares() {
-    return AxiosService.get(`${this.uri}/total-hectares`);
+  public static async getTotalHectares() {
+    const data = (await apiService.get(
+      `${this.uri}/total-area`
+    )) as unknown as [any];
+    return data.length ? data[0].sum : 0;
   }
 
-  public static getTotalFarmsByState() {
-    return AxiosService.get(`${this.uri}/farms-by-state`);
+  public static async getTotalFarmsByState() {
+    const data = (await apiService.get(
+      `${this.uri}/total-farms-by-state`
+    )) as unknown as [any];
+    return data.map((item) => ({
+      name: item.state,
+      value: +item.count,
+    }));
   }
 
-  public static getTotalTypeArea() {
-    return AxiosService.get(`${this.uri}/type-area`);
+  public static async getTotalTypeArea() {
+    const data = (await apiService.get(
+      `${this.uri}/total-by-area`
+    )) as unknown as [any];
+    return data.map((item) => ({
+      name: item.name,
+      value: +item.value,
+    }));
   }
 
-  public static getTotalArableArea() {
-    return AxiosService.get(`${this.uri}/total-arable-area`);
+  public static async getTotalByCrops() {
+    const data = (await apiService.get(
+      `${this.uri}/total-by-crops`
+    )) as unknown as [any];
+    return data.map((item) => ({
+      name: item.name,
+      value: +item.value,
+    }));
   }
 }

@@ -23,14 +23,14 @@ import { ProducersService } from "../../services/http/ProducersService";
 import { formValidation } from "../../validations/FormValidation";
 
 const defaultValues = {
-  name: "",
-  cpf: "",
+  producer_name: "",
+  cpf_cnpj: "",
   farm_name: "",
   state: "SC",
   city: "",
   total_area: 0,
-  total_arable_area: 0,
-  total_vegetation_area: 0,
+  arable_area: 0,
+  vegetation_area: 0,
   crops: "",
 };
 
@@ -65,7 +65,6 @@ const ProducerPost: React.FC = () => {
       if (id) {
         return await ProducersService.update(+id, values);
       }
-
       return await ProducersService.store(values);
     },
     {
@@ -110,15 +109,17 @@ const ProducerPost: React.FC = () => {
               <Grid templateColumns="repeat(3, 1fr)" gap="4">
                 <GridItem>
                   <FormControl>
-                    <FormLabel htmlFor="name">Nome do produtor</FormLabel>
+                    <FormLabel htmlFor="producer_name">
+                      Nome do produtor
+                    </FormLabel>
                     <Input
                       as={Field}
                       type="text"
-                      name="name"
+                      name="producer_name"
                       placeholder="Nome do produtor"
                     />
                     <ErrorMessage
-                      name="name"
+                      name="producer_name"
                       render={(msg: String) => (
                         <Text fontSize="xs" color="tomato">
                           {msg}
@@ -130,15 +131,15 @@ const ProducerPost: React.FC = () => {
 
                 <GridItem>
                   <FormControl>
-                    <FormLabel htmlFor="cpf">CPF</FormLabel>
+                    <FormLabel htmlFor="cpf_cnpj">CPF</FormLabel>
                     <Input
                       as={Field}
                       type="text"
-                      name="cpf"
-                      placeholder="CPF"
+                      name="cpf_cnpj"
+                      placeholder="CPF/CNPJ"
                     />
                     <ErrorMessage
-                      name="cpf"
+                      name="cpf_cnpj"
                       render={(msg: String) => (
                         <Text fontSize="xs" color="tomato">
                           {msg}
@@ -237,17 +238,17 @@ const ProducerPost: React.FC = () => {
 
                 <GridItem>
                   <FormControl>
-                    <FormLabel htmlFor="total_arable_area">
+                    <FormLabel htmlFor="arable_area">
                       Área agricultável em hectares
                     </FormLabel>
                     <Input
                       as={Field}
                       type="number"
-                      name="total_arable_area"
+                      name="arable_area"
                       placeholder="Área agricultável em hectares"
                     />
                     <ErrorMessage
-                      name="total_arable_area"
+                      name="arable_area"
                       render={(msg: String) => (
                         <Text fontSize="xs" color="tomato">
                           {msg}
@@ -259,17 +260,17 @@ const ProducerPost: React.FC = () => {
 
                 <GridItem>
                   <FormControl>
-                    <FormLabel htmlFor="total_vegetation_area">
+                    <FormLabel htmlFor="vegetation_area">
                       Área de vegetação em hectares
                     </FormLabel>
                     <Input
                       as={Field}
                       type="number"
-                      name="total_vegetation_area"
+                      name="vegetation_area"
                       placeholder="Área de vegetação em hectares"
                     />
                     <ErrorMessage
-                      name="total_vegetation_area"
+                      name="vegetation_area"
                       render={(msg: String) => (
                         <Text fontSize="xs" color="tomato">
                           {msg}
@@ -290,9 +291,9 @@ const ProducerPost: React.FC = () => {
                       height="200"
                     >
                       <option value="Soja">Soja</option>
-                      <option value="Algodão">Algodão</option>
+                      <option value="Algodao">Algodão</option>
                       <option value="Milho">Milho</option>
-                      <option value="Café">Café</option>
+                      <option value="Cafe">Café</option>
                       <option value="Cana">Cana de Açucar</option>
                     </Field>
                     <ErrorMessage

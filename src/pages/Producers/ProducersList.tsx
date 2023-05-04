@@ -89,15 +89,15 @@ const ProducersList: React.FC = () => {
           ) : (
             <Table size="sm" variant="striped">
               <TableCaption>
-                {data?.data.length
-                  ? `Total de produtores: ${data.data.length}`
+                {data?.length
+                  ? `Total de produtores: ${data.length}`
                   : "Nennhum produtor encontrado"}
               </TableCaption>
               <Thead>
                 <Tr>
                   <Th>ID</Th>
                   <Th>Nome</Th>
-                  <Th>CPF</Th>
+                  <Th>CPF/CNPJ</Th>
                   <Th>Cidade</Th>
                   <Th>Estado</Th>
                   <Th isNumeric>Área total</Th>
@@ -108,16 +108,16 @@ const ProducersList: React.FC = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {data?.data.map((item: any, index: number) => (
+                {data?.map((item: any, index: number) => (
                   <Tr key={index}>
                     <Td>{item.id}</Td>
-                    <Td>{item.cpf}</Td>
-                    <Td>{item.name}</Td>
+                    <Td>{item.cpf_cnpj}</Td>
+                    <Td>{item.producer_name}</Td>
                     <Td>{item.city}</Td>
                     <Td>{item.state}</Td>
                     <Td isNumeric>{item.total_area}</Td>
-                    <Td isNumeric>{item.total_arable_area}</Td>
-                    <Td isNumeric>{item.total_vegetation_area}</Td>
+                    <Td isNumeric>{item.arable_area}</Td>
+                    <Td isNumeric>{item.vegetation_area}</Td>
                     <Td>{item.crops}</Td>
                     <Td>
                       <IconButton

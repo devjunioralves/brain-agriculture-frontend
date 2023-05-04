@@ -23,7 +23,6 @@ const Dashboard: React.FC = () => {
         await OverviewDashboardHttpService.getTotalHectares(),
     },
   ]);
-
   const graphs: any = useQueries([
     {
       queryKey: ["farmsByState", 0],
@@ -31,20 +30,25 @@ const Dashboard: React.FC = () => {
         await OverviewDashboardHttpService.getTotalFarmsByState(),
     },
     {
-      queryKey: ["typeArea", 1],
-      queryFn: async () =>
-        await OverviewDashboardHttpService.getTotalTypeArea(),
+      queryKey: ["crop", 1],
+      queryFn: async () => await OverviewDashboardHttpService.getTotalByCrops(),
     },
     {
       queryKey: ["totalArableArea", 2],
       queryFn: async () =>
-        await OverviewDashboardHttpService.getTotalArableArea(),
+        await OverviewDashboardHttpService.getTotalTypeArea(),
     },
   ]);
 
   const dashboardItems = [
     { title: "Total de fazendas em quantidade", indexArrayResult: 0 },
     { title: "Área de fazendas em hectáres", indexArrayResult: 1 },
+  ];
+
+  const graphicItems = [
+    { title: "Fazendas por estado", indexArrayResult: 0 },
+    { title: "Fazendas por cultura", indexArrayResult: 1 },
+    { title: "Área agricultável e vegetação", indexArrayResult: 2 },
   ];
 
   return (
@@ -68,13 +72,11 @@ const Dashboard: React.FC = () => {
                   </Stack>
 
                   <Text fontSize={"45px"}>
-                    {results[item.indexArrayResult].isFetching ||
-                    results[item.indexArrayResult].isFetching ? (
+                    {results[item.indexArrayResult].isFetching ? (
                       <Spinner size="lg" />
                     ) : (
-                      results[item.indexArrayResult]?.data?.data.total
-                    )}{" "}
-                    {item.indexArrayResult !== 0 && "ha"}
+                      results[item.indexArrayResult].data
+                    )}
                   </Text>
                 </Stack>
               </GridItem>
@@ -84,31 +86,22 @@ const Dashboard: React.FC = () => {
       </Grid>
       <Divider />
       <Grid templateColumns="repeat(3, 8fr)" gap="4" m="4">
-        <Grid flexDirection={"column"}>
-          <GridItem w="100%">
-            <GraphicComponent
-              title="Fazendas por estado"
-              data={graphs[0]?.data?.data}
-            />
-          </GridItem>
-        </Grid>
-
-        <Grid>
-          <GridItem w="100%">
-            <GraphicComponent
-              title="Fazendas por cultura"
-              data={graphs[1]?.data?.data}
-            />
-          </GridItem>
-        </Grid>
-        <Grid>
-          <GridItem w="100%">
-            <GraphicComponent
-              title="Área agricultável e vegetação"
-              data={graphs[2]?.data?.data}
-            />
-          </GridItem>
-        </Grid>
+        {graphicItems.map((item: any) => (
+          <>
+            <Grid flexDirection={"column"}>
+              <GridItem w="100%">
+                {graphs[item.indexArrayResult].isFetching ? (
+                  <Spinner size="lg" />
+                ) : (
+                  <GraphicComponent
+                    title={item.title}
+                    data={graphs[item.indexArrayResult]?.data}
+                  />
+                )}
+              </GridItem>
+            </Grid>
+          </>
+        ))}
       </Grid>
     </BaseLayoutComponent>
   );

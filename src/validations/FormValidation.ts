@@ -1,8 +1,8 @@
 import * as Yup from "yup";
 
 export const formValidation = Yup.object().shape({
-  name: Yup.string().required("Campo obrigatório"),
-  cpf: Yup.string()
+  producer_name: Yup.string().required("Campo obrigatório"),
+  cpf_cnpj: Yup.string()
     .required("Campo obrigatório")
     .max(11, "Máximo 11 caracteres")
     .test("invalid", "CPF inválido", (value: any) => validateCPF(value)),
@@ -14,11 +14,11 @@ export const formValidation = Yup.object().shape({
     .max(100, "Área total não pode ser maior que 100 Hectares")
     .positive("Valor deve ser maior ou igual a 0")
     .integer("Somente números inteiros"),
-  total_arable_area: Yup.number()
+  arable_area: Yup.number()
     .required("Campo obrigatório")
     .positive("Valor deve ser maior ou igual a 0")
     .integer("Somente números inteiros"),
-  total_vegetation_area: Yup.number()
+  vegetation_area: Yup.number()
     .required("Campo obrigatório")
     .positive("Valor deve ser maior ou igual a 0")
     .integer("Somente números inteiros")
